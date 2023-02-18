@@ -2,9 +2,24 @@ module main
 
 type Snowflake = string
 
+enum ChannelType {
+	guild_text = 0
+	dm = 1
+	guild_voice = 2
+	group_dm = 3
+	guild_category = 4
+	guild_announcement = 5
+	announcement_thread = 10
+	public_thread = 11
+	private_thread = 12
+	guild_stage_voice = 13
+	guild_directory = 14
+	guild_forum = 15
+}
+
 struct Channel {
-	id       Snowflake [required]
-	@type    int       [required]
+	id       Snowflake   [required]
+	@type    ChannelType [required]
 	guild    Snowflake
 	position int
 	// Todo: add permission_overwrites
