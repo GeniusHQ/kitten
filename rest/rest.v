@@ -1,6 +1,6 @@
 module rest
 
-import kitten.net
+import net
 import x.json2
 
 [heap]

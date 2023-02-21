@@ -2,7 +2,7 @@ module net
 
 import os
 import net.http
-import kitten.reflect
+import reflect
 
 pub struct HttpClient {
 }
