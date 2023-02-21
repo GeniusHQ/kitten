@@ -2,7 +2,7 @@ module kitten
 
 import os
 import rest
-import gateway
+// import gateway
 
 [heap]
 pub struct Client {
@@ -10,19 +10,19 @@ pub:
 	stop chan int
 pub mut:
 	rest    &rest.Rest
-	gateway &gateway.Gateway
+	// gateway &gateway.Gateway
 }
 
 pub fn new_client(token string) &Client {
 	return &Client{
 		stop: chan int{cap: 1}
 		rest: rest.new_rest(token)
-		gateway: gateway.new_gateway(token)
+		// gateway: gateway.new_gateway(token)
 	}
 }
 
 pub fn (mut client Client) start() ! {
-	client.gateway.start()!
+	// client.gateway.start()!
 }
 
 pub fn (client &Client) wait() ! {
