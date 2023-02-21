@@ -1,18 +1,18 @@
 module rest
 
-import net
+import network
 import x.json2
 
 [heap]
 pub struct Rest {
 	token string          [required]
-	http  &net.HttpClient
+	http  &network.HttpClient
 }
 
 pub fn new_rest(token string) &Rest {
 	rest := &Rest{
 		token: token
-		http: net.new_http_client()
+		http: network.new_http_client()
 	}
 
 	return rest

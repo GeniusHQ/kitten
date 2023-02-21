@@ -1,4 +1,4 @@
-module net
+module network
 
 import os
 import net.http
