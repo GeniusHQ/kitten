@@ -3,5 +3,5 @@
 
   <p>An experimental wrapper for Discord API for the V language</p>
 
-  <img src="https://img.shields.io/badge/Made%20with-V-536b8a">
+  [![vlang](https://img.shields.io/badge/Made%20with-V-536b8a)](https://vlang.io)
 </div>
