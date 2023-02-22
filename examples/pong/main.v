@@ -1,7 +1,7 @@
-module main
+module pong
 
-import kitten
 import os
+import kitten
 
 fn intents() int {
 	mut r := 0
@@ -14,6 +14,8 @@ fn intents() int {
 
 fn main() {
 	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), intents())
+
+	// Todo: add on_message handler here
 
 	client.start()!
 	client.wait()!
