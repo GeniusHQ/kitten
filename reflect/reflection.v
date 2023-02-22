@@ -19,3 +19,11 @@ pub fn deserialize[T](src string) !T {
 
 	return json2.decode[T](src)!
 }
+
+pub fn serialize[T](obj T) string {
+	$if T is Mappable {
+		return json2.encode[map[string]json2.Any](Mappable(obj).to_map())
+	}
+
+	return json2.encode[T](obj)
+}
