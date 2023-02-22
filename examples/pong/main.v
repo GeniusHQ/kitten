@@ -2,7 +2,8 @@ module main
 
 import os
 import kitten
-import intents
+import kitten.intents
+import kitten.gateway
 
 fn get_intents() int {
 	mut r := intents.Intent.@none.int()
@@ -16,7 +17,13 @@ fn get_intents() int {
 fn main() {
 	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), get_intents())
 
-	// Todo: add on_message handler here
+	client.on_message_create(fn (mut client kitten.Client, event &gateway.MessageCreateEvent) ! {
+		if event.content.to_lower().starts_with('!ping') {
+			client.channel_message_send(
+				event.channel,
+				'pong')!
+		}
+	})
 
 	client.start()!
 	client.wait()!
