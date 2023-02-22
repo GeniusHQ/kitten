@@ -1,19 +1,20 @@
-module pong
+module main
 
 import os
 import kitten
+import intents
 
-fn intents() int {
-	mut r := 0
+fn get_intents() int {
+	mut r := intents.Intent.@none.int()
 
-	r |= 1 << 9 // Guild Messages
-	r |= 1 << 15 // Message Content
+	r += intents.Intent.guild_messages.int() // Guild Messages
+	r += intents.Intent.message_content.int() // Message Content
 
 	return r
 }
 
 fn main() {
-	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), intents())
+	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), get_intents())
 
 	// Todo: add on_message handler here
 
