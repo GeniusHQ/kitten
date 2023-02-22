@@ -11,8 +11,9 @@ import logger
 
 [heap]
 pub struct Gateway {
-	token string
-	http  &network.HttpClient
+	token   string              [required]
+	intents int                 [required]
+	http    &network.HttpClient
 mut:
 	logger             &log.Logger
 	client             &websocket.Client
@@ -20,9 +21,10 @@ mut:
 	sequence           ?int
 }
 
-pub fn new_gateway(token string) &Gateway {
+pub fn new_gateway(token string, intents int) &Gateway {
 	gateway := &Gateway{
 		token: token
+		intents: intents
 		http: network.new_http_client()
 		client: unsafe { nil }
 		logger: logger.new_logger()
@@ -100,11 +102,6 @@ fn (mut g Gateway) send_heartbeat() ! {
 }
 
 fn (mut g Gateway) send_identify() ! {
-	mut intents := 0
-
-	intents |= 1 << 9 // Guild_Messages
-	intents |= 1 << 15 // Message_Content
-
 	mut data := map[string]json2.Any{}
 
 	mut data_properties := map[string]json2.Any{}
@@ -114,7 +111,7 @@ fn (mut g Gateway) send_identify() ! {
 	data_properties['device'] = 'kitten'
 
 	data['token'] = g.token
-	data['intents'] = intents
+	data['intents'] = g.intents
 	data['properties'] = data_properties
 
 	mut payload := GatewayPayload{

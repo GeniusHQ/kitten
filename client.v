@@ -7,17 +7,21 @@ import gateway
 [heap]
 pub struct Client {
 pub:
-	stop chan int
+	token   string
+	intents int
+	stop    chan int
 pub mut:
 	rest    &rest.Rest
 	gateway &gateway.Gateway
 }
 
-pub fn new_client(token string) &Client {
+pub fn new_client(token string, intents int) &Client {
 	return &Client{
+		token: token
+		intents: intents
 		stop: chan int{cap: 1}
-		rest: rest.new_rest(token)
-		gateway: gateway.new_gateway(token)
+		rest: rest.new_rest(token, intents)
+		gateway: gateway.new_gateway(token, intents)
 	}
 }
 

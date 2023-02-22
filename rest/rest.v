@@ -5,13 +5,15 @@ import x.json2
 
 [heap]
 pub struct Rest {
-	token string              [required]
-	http  &network.HttpClient
+	token   string              [required]
+	intents int                 [required]
+	http    &network.HttpClient
 }
 
-pub fn new_rest(token string) &Rest {
+pub fn new_rest(token string, intents int) &Rest {
 	rest := &Rest{
 		token: token
+		intents: intents
 		http: network.new_http_client()
 	}
 
