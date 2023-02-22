@@ -13,6 +13,8 @@ pub:
 pub mut:
 	rest    &rest.Rest
 	gateway &gateway.Gateway
+mut:
+	fn_on_message ?fn (mut client Client, event &gateway.MessageCreateEvent)!
 }
 
 pub fn new_client(token string, intents int) &Client {
@@ -26,6 +28,8 @@ pub fn new_client(token string, intents int) &Client {
 }
 
 pub fn (mut client Client) start() ! {
+	client.gateway.fn_on_message = client.event_message_create
+
 	client.gateway.start()!
 }
 
@@ -38,6 +42,16 @@ pub fn (client &Client) wait() ! {
 
 	print('\r')
 	println('exiting')
+}
+
+fn (mut client Client) event_message_create(event gateway.MessageCreateEvent) ! {
+	if func := client.fn_on_message {
+		func(mut client, event)!
+	}
+}
+
+pub fn (mut client Client) on_message_create(func fn (mut client Client, event &gateway.MessageCreateEvent)!) {
+	client.fn_on_message = func
 }
 
 pub fn (client &Client) channel_fetch(channel string) !&rest.Channel {

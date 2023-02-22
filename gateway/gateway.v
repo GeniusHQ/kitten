@@ -19,6 +19,8 @@ mut:
 	client             &websocket.Client
 	heartbeat_interval int
 	sequence           ?int
+pub mut:
+	fn_on_message ?fn (event MessageCreateEvent)!
 }
 
 pub fn new_gateway(token string, intents int) &Gateway {
@@ -35,18 +37,12 @@ pub fn new_gateway(token string, intents int) &Gateway {
 	return gateway
 }
 
-struct GatewayBotResponse {
-	url    string
-	shards int
-	// Todo: add session_start_limit
-}
-
 pub fn (mut g Gateway) start() ! {
 	res := g.http.fetch_json[GatewayBotResponse]('GET', 'https://discord.com/api/v10/gateway/bot',
 		'application/json')!
 	url := '${res.url}?v=10&encoding=json'
 
-	g.client = websocket.new_client(url, logger: g.logger)!
+	g.client = websocket.new_client(url, logger: g.logger)! // Todo: use network.new_client()
 
 	g.client.on_message(g.on_message)
 	g.client.on_close(g.on_close)
