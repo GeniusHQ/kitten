@@ -13,6 +13,7 @@ pub fn new_http_client() &HttpClient {
 	return client
 }
 
+// Todo: don't use env here
 fn (h &HttpClient) headers_raw() map[string]string {
 	return {
 		'Authorization': 'Bot ${os.getenv('DISCORD_TOKEN')}'

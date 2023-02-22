@@ -5,7 +5,7 @@ import x.json2
 
 [heap]
 pub struct Rest {
-	token string          [required]
+	token string              [required]
 	http  &network.HttpClient
 }
 
