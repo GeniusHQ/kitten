@@ -14,16 +14,16 @@ fn get_intents() int {
 	return r
 }
 
+fn handle_on_message(mut client kitten.Client, event &gateway.MessageCreateEvent) ! {
+	if event.content.to_lower().starts_with('!ping') {
+		client.channel_message_send(event.channel, 'pong')!
+	}
+}
+
 fn main() {
 	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), get_intents())
 
-	client.on_message_create(fn (mut client kitten.Client, event &gateway.MessageCreateEvent) ! {
-		if event.content.to_lower().starts_with('!ping') {
-			client.channel_message_send(
-				event.channel,
-				'pong')!
-		}
-	})
+	client.on_message_create(handle_on_message)
 
 	client.start()!
 	client.wait()!
