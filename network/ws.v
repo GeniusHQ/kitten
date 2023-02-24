@@ -1,16 +1,15 @@
 module network
 
 import net.websocket
-import kitten.logger
+import logger
 
 type FnOnMessage = fn (mut c WebsocketClient, msg &websocket.Message) !
 
 [heap]
 pub struct WebsocketClient {
-pub:
-	client &websocket.Client
 pub mut:
 	logger        &logger.Logger
+	client        &websocket.Client
 	fn_on_message ?FnOnMessage
 }
 
@@ -28,6 +27,12 @@ pub fn new_websocket_client(addr string, mut l logger.Logger) !&WebsocketClient 
 	return client
 }
 
+pub fn (mut c WebsocketClient) start() ! {
+	c.client.connect()!
+
+	spawn c.routine_listen()
+}
+
 pub fn (mut c WebsocketClient) on_message(func FnOnMessage) {
 	c.fn_on_message = func
 }
@@ -40,4 +45,18 @@ fn (mut c WebsocketClient) ws_on_message(mut client websocket.Client, msg &webso
 
 fn (mut c WebsocketClient) ws_on_close(mut client websocket.Client, code int, reason string) ! {
 	c.logger.warn('websocket closed code=${code} reason=${reason}')
+}
+
+pub fn (mut c WebsocketClient) write_binary(v []byte) ! {
+	c.client.write(v, .text_frame)!
+}
+
+pub fn (mut c WebsocketClient) write_string(v string) ! {
+	c.client.write_string(v)!
+}
+
+fn (mut c WebsocketClient) routine_listen() {
+	for {
+		c.client.listen() or { c.logger.warn('failed at listening websocket ${err}') }
+	}
 }

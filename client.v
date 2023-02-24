@@ -14,7 +14,7 @@ pub mut:
 	rest    &rest.Rest
 	gateway &gateway.Gateway
 mut:
-	fn_on_message ?fn (mut client Client, event &gateway.MessageCreateEvent)!
+	fn_on_message ?fn (mut client Client, event &gateway.MessageCreateEvent) !
 }
 
 pub fn new_client(token string, intents int) &Client {
@@ -50,7 +50,7 @@ fn (mut client Client) event_message_create(event gateway.MessageCreateEvent) ! 
 	}
 }
 
-pub fn (mut client Client) on_message_create(func fn (mut client Client, event &gateway.MessageCreateEvent)!) {
+pub fn (mut client Client) on_message_create(func fn (mut client Client, event &gateway.MessageCreateEvent) !) {
 	client.fn_on_message = func
 }
 

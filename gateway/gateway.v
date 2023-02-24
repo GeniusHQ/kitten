@@ -4,10 +4,9 @@ import time
 import net.websocket
 import network
 import reflect
+import logger
 import x.json2
 import os
-import log
-import logger
 
 [heap]
 pub struct Gateway {
@@ -15,12 +14,12 @@ pub struct Gateway {
 	intents int                 [required]
 	http    &network.HttpClient
 mut:
-	logger             &log.Logger
-	client             &websocket.Client
+	logger             &logger.Logger
+	client             &network.WebsocketClient
 	heartbeat_interval int
 	sequence           ?int
 pub mut:
-	fn_on_message ?fn (event MessageCreateEvent)!
+	fn_on_message ?fn (event MessageCreateEvent) !
 }
 
 pub fn new_gateway(token string, intents int) &Gateway {
@@ -42,14 +41,11 @@ pub fn (mut g Gateway) start() ! {
 		'application/json')!
 	url := '${res.url}?v=10&encoding=json'
 
-	g.client = websocket.new_client(url, logger: g.logger)! // Todo: use network.new_client()
+	g.client = network.new_websocket_client(url, mut g.logger)!
 
 	g.client.on_message(g.on_message)
-	g.client.on_close(g.on_close)
 
-	g.client.connect()!
-
-	spawn g.routine_listen()
+	g.client.start()!
 }
 
 fn (mut g Gateway) get_sequence() json2.Any {
@@ -58,12 +54,6 @@ fn (mut g Gateway) get_sequence() json2.Any {
 	}
 
 	return json2.Null{}
-}
-
-fn (mut g Gateway) routine_listen() {
-	for {
-		g.client.listen() or { eprintln('failed at listening websocket ${err}') }
-	}
 }
 
 fn (mut g Gateway) routine_heartbeat() {
@@ -118,14 +108,10 @@ fn (mut g Gateway) send_identify() ! {
 	g.send(payload)!
 }
 
-fn (mut g Gateway) on_message(mut c websocket.Client, msg &websocket.Message) ! {
+fn (mut g Gateway) on_message(mut c network.WebsocketClient, msg &websocket.Message) ! {
 	payload := reflect.deserialize[GatewayPayload](msg.payload.bytestr())!
 
 	g.handle_payload(&payload)!
-}
-
-fn (mut g Gateway) on_close(mut c websocket.Client, code int, reason string) ! {
-	g.logger.fatal('websocket closed code=${code} reason=${reason}')
 }
 
 fn (mut g Gateway) handle_payload(payload &GatewayPayload) ! {
