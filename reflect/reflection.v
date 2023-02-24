@@ -27,3 +27,15 @@ pub fn serialize[T](obj T) string {
 
 	return json2.encode[T](obj)
 }
+
+pub fn from_map[T](data map[string]json2.Any) T {
+	mut res := T{}
+
+	res.from_map(data)
+
+	return res
+}
+
+pub fn to_map[T](obj T) map[string]json2.Any {
+	return obj.to_map()
+}

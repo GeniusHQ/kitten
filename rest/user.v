@@ -3,7 +3,7 @@ module rest
 import x.json2
 
 [noinit]
-struct User {
+pub struct User {
 	// Todo: complete this
 }
 

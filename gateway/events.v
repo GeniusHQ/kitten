@@ -1,13 +1,15 @@
 module gateway
 
 import x.json2
+import rest
+import reflect
 
 [noinit]
 pub struct MessageCreateEvent {
 pub mut:
-	content string [json: 'content']
-	channel string [json: 'channel_id']
-	author  string [json: 'author']
+	content string     [json: 'content']
+	channel string     [json: 'channel_id']
+	author  &rest.User [json: 'author'] = unsafe { nil } // Todo: find a better way to do this
 }
 
 pub fn (mut event MessageCreateEvent) from_map(data map[string]json2.Any) {
@@ -20,7 +22,8 @@ pub fn (mut event MessageCreateEvent) from_map(data map[string]json2.Any) {
 				event.channel = val.str()
 			}
 			'author' {
-				event.author = val.str()
+				user := reflect.from_map[rest.User](val.as_map())
+				event.author = &user
 			}
 			else {
 				dump('unimplemented ${key}')
