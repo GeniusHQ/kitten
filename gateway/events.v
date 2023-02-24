@@ -5,8 +5,9 @@ import x.json2
 [noinit]
 pub struct MessageCreateEvent {
 pub mut:
-	content string
+	content string [json: 'content']
 	channel string [json: 'channel_id']
+	author  string [json: 'author']
 }
 
 pub fn (mut event MessageCreateEvent) from_map(data map[string]json2.Any) {
@@ -17,6 +18,9 @@ pub fn (mut event MessageCreateEvent) from_map(data map[string]json2.Any) {
 			}
 			'channel_id' {
 				event.channel = val.str()
+			}
+			'author' {
+				event.author = val.str()
 			}
 			else {
 				dump('unimplemented ${key}')
