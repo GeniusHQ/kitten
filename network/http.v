@@ -4,6 +4,8 @@ import os
 import net.http
 import reflect
 
+const useragent = 'Kitten (https://github.com/geniushq/kitten v0.0.0)'
+
 pub struct HttpClient {
 }
 
@@ -17,7 +19,7 @@ pub fn new_http_client() &HttpClient {
 fn (h &HttpClient) headers_raw() map[string]string {
 	return {
 		'Authorization': 'Bot ${os.getenv('DISCORD_TOKEN')}'
-		'User-Agent':    'Kitten (https://github.com/geniushq/kitten v0.0.0)'
+		'User-Agent':    useragent,
 	}
 }
 
