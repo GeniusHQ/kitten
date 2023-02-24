@@ -9,9 +9,9 @@ mut:
 }
 
 pub fn new_logger() &Logger {
-	logger := Logger{}
+	logger := &Logger{}
 
-	return &logger
+	return logger
 }
 
 pub fn (mut l Logger) fatal(s string) {
