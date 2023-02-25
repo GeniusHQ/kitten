@@ -44,6 +44,7 @@ pub fn (mut g Gateway) start() ! {
 	g.client = network.new_websocket_client(url, mut g.logger)!
 
 	g.client.on_message(g.on_message)
+	g.client.on_close(g.on_close)
 
 	g.client.start()!
 }
@@ -112,6 +113,10 @@ fn (mut g Gateway) on_message(mut c network.WebsocketClient, msg &websocket.Mess
 	payload := reflect.deserialize[GatewayPayload](msg.payload.bytestr())!
 
 	g.handle_payload(&payload)!
+}
+
+fn (mut g Gateway) on_close(mut c network.WebsocketClient, code int, reason string) ! {
+	g.logger.fatal('websocket closed')
 }
 
 fn (mut g Gateway) handle_payload(payload &GatewayPayload) ! {
