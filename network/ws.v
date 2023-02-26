@@ -32,8 +32,15 @@ pub fn new_websocket_client(addr string, mut l logger.Logger) !&WebsocketClient 
 
 pub fn (mut c WebsocketClient) start() ! {
 	c.client.connect()!
+	c.client.listen()!
+}
 
-	spawn c.routine_listen()
+pub fn (mut c WebsocketClient) close()! {
+	c.free()
+}
+
+pub fn (mut c WebsocketClient) free() {
+	c.client.free()
 }
 
 pub fn (mut c WebsocketClient) on_message(func FnOnMessage) {
@@ -62,10 +69,4 @@ pub fn (mut c WebsocketClient) write_binary(v []byte) ! {
 
 pub fn (mut c WebsocketClient) write_string(v string) ! {
 	c.client.write_string(v)!
-}
-
-fn (mut c WebsocketClient) routine_listen() {
-	for {
-		c.client.listen() or { c.logger.warn('failed at listening websocket ${err}') }
-	}
 }
