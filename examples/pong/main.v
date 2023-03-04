@@ -14,6 +14,10 @@ fn get_intents() int {
 	return r
 }
 
+fn handle_on_ready(mut client kitten.Client, event &gateway.ReadyEvent) ! {
+	println('Ready')
+}
+
 fn handle_on_message(mut client kitten.Client, event &gateway.MessageCreateEvent) ! {
 	if event.content.to_lower().starts_with('!ping') {
 		client.channel_message_send(event.channel, 'pong')!
