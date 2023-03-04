@@ -27,6 +27,7 @@ fn handle_on_message(mut client kitten.Client, event &gateway.MessageCreateEvent
 fn main() {
 	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), get_intents())
 
+	client.on_ready(handle_on_ready)
 	client.on_message_create(handle_on_message)
 
 	client.start()!
