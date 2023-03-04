@@ -38,7 +38,7 @@ pub fn (mut c WebsocketClient) listen() ! {
 	c.client.listen()!
 }
 
-pub fn (mut c WebsocketClient) close()! {
+pub fn (mut c WebsocketClient) close() ! {
 	c.free()
 }
 
