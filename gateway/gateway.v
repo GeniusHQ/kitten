@@ -19,7 +19,6 @@ mut:
 	connected          bool
 	heartbeat_interval int
 	sequence           ?int
-	heartbeat_index    int // used to stop heartbeat routines
 	resume_url         string
 	session_id         string
 pub mut:
@@ -35,7 +34,6 @@ pub fn new_gateway(token string, intents int) &Gateway {
 		connected: false
 		logger: logger.new_logger()
 		heartbeat_interval: 0
-		heartbeat_index: -1
 		sequence: none
 	}
 
@@ -96,12 +94,12 @@ fn (mut g Gateway) get_sequence() json2.Any {
 	return json2.Null{}
 }
 
-fn (mut g Gateway) routine_heartbeat(index int) {
+fn (mut g Gateway) routine_heartbeat() {
 	for {
 		time.sleep(time.millisecond * g.heartbeat_interval)
 
-		if g.heartbeat_index != index {
-			break
+		if !g.connected {
+			continue
 		}
 
 		t := 5
@@ -215,9 +213,8 @@ fn (mut g Gateway) handle_payload_hello(payload &GatewayPayload) ! {
 	data := payload.data.as_map()
 
 	g.heartbeat_interval = data['heartbeat_interval']!.int()
-	g.heartbeat_index++
 	
-	spawn g.routine_heartbeat(g.heartbeat_index)
+	spawn g.routine_heartbeat()
 
 	g.send_identify()!
 }
