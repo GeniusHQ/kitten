@@ -22,6 +22,7 @@ mut:
 	resume_url         string
 	session_id         string
 pub mut:
+	fn_on_ready   ?fn (event ReadyEvent) !
 	fn_on_message ?fn (event MessageCreateEvent) !
 }
 

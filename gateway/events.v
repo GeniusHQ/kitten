@@ -72,6 +72,10 @@ fn (mut g Gateway) handle_event(data json2.Any, key string) ! {
 
 			g.session_id = event.session_id
 			g.resume_url = event.resume_gateway_url
+
+			if func := g.fn_on_ready {
+				func(event)!
+			}
 		}
 		'MESSAGE_CREATE' {
 			mut event := MessageCreateEvent{}
