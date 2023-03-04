@@ -20,6 +20,8 @@ mut:
 	heartbeat_interval int
 	sequence           ?int
 	heartbeat_index    int // used to stop heartbeat routines
+	resume_url         string
+	session_id         string
 pub mut:
 	fn_on_message ?fn (event MessageCreateEvent) !
 }
@@ -33,7 +35,7 @@ pub fn new_gateway(token string, intents int) &Gateway {
 		connected: false
 		logger: logger.new_logger()
 		heartbeat_interval: 0
-		heartbeat_index: 0
+		heartbeat_index: -1
 		sequence: none
 	}
 
@@ -41,12 +43,11 @@ pub fn new_gateway(token string, intents int) &Gateway {
 }
 
 pub fn (mut g Gateway) start() ! {
-	spawn g.routine_reconnect()
-
 	g.connect()!
 }
 
 pub fn (mut g Gateway) connect() ! {
+	g.connected = false
 	g.logger.info('connecting to gateway')
 	
 	res := g.http.fetch_json[GatewayBotResponse]('GET', 'https://discord.com/api/v10/gateway/bot',
@@ -59,9 +60,28 @@ pub fn (mut g Gateway) connect() ! {
 	g.client.on_close(g.on_close)
 
 	g.client.start()!
-
 	g.connected = true
-	g.logger.info('successfully connected to gateway')
+	g.client.listen()!
+
+	for {
+		g.reconnect()!
+		time.sleep(time.second)
+	}
+}
+
+pub fn (mut g Gateway) reconnect() ! {
+	g.connected = false
+	g.logger.info('reconnecting to gateway')
+
+	g.client = network.new_websocket_client(g.resume_url, mut g.logger)!
+
+	g.client.on_message(g.on_message)
+	g.client.on_close(g.on_close)
+
+	g.client.start()!
+	g.connected = true
+	g.logger.info('successfully reconnected to gateway')
+	g.client.listen()!
 }
 
 fn (mut g Gateway) close()! {
@@ -100,28 +120,6 @@ fn (mut g Gateway) routine_heartbeat(index int) {
 	}
 }
 
-fn (mut g Gateway) routine_reconnect() {
-	defer {
-		g.client.free()
-	}
-
-	for {
-		time.sleep(time.second)
-
-		if g.connected {
-			continue
-		}
-
-		g.close() or {
-			g.logger.fatal('failed at closing gateway ws client ${err}')
-		}
-		
-		g.connect() or {
-			g.logger.fatal('failed at reconnecting to gateway ${err}')
-		} // Fixme: we might use a separate method for reconnecting so we can reuse the gateway url according to the api
-	}
-}
-
 fn (mut g Gateway) send(payload &GatewayPayload) ! {
 	g.client.write_string(reflect.serialize[GatewayPayload](payload))!
 }
@@ -151,6 +149,26 @@ fn (mut g Gateway) send_identify() ! {
 	mut payload := GatewayPayload{
 		op: .identify
 		data: data
+	}
+
+	g.send(payload)!
+}
+
+fn (mut g Gateway) send_resume() ! {
+	mut seq := 0
+	if v := g.sequence {
+		seq = v
+	}
+
+	mut data := map[string]json2.Any{}
+
+	data["token"] = g.token
+	data["session_id"] = g.session_id
+	data["seq"] = seq
+
+	mut payload := GatewayPayload{
+		op: .resume,
+		data: data,
 	}
 
 	g.send(payload)!

@@ -32,6 +32,9 @@ pub fn new_websocket_client(addr string, mut l logger.Logger) !&WebsocketClient 
 
 pub fn (mut c WebsocketClient) start() ! {
 	c.client.connect()!
+}
+
+pub fn (mut c WebsocketClient) listen() ! {
 	c.client.listen()!
 }
 

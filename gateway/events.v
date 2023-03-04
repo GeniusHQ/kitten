@@ -36,8 +36,43 @@ pub fn (event &MessageCreateEvent) to_map() map[string]json2.Any {
 	return {}
 }
 
+[noinit]
+pub struct ReadyEvent {
+	pub mut:
+	session_id         string [json: 'session_id']
+	resume_gateway_url string
+}
+
+pub fn (mut event ReadyEvent) from_map(data map[string]json2.Any) {
+	for key, val in data {
+		match key {
+			'session_id' {
+				event.session_id = val.str()
+			}
+			'resume_gateway_url' {
+				event.resume_gateway_url = val.str()
+			}
+			else {
+				dump('unimplemented ${key}')
+			}
+		}
+	}
+}
+
+pub fn (event &ReadyEvent) to_map() map[string]json2.Any {
+	return {}
+}
+
 fn (mut g Gateway) handle_event(data json2.Any, key string) ! {
 	match key {
+		'READY' {
+			mut event := ReadyEvent{}
+
+			event.from_map(data.as_map())
+
+			g.session_id = event.session_id
+			g.resume_url = event.resume_gateway_url
+		}
 		'MESSAGE_CREATE' {
 			mut event := MessageCreateEvent{}
 
