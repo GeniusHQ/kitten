@@ -38,7 +38,7 @@ pub fn (event &MessageCreateEvent) to_map() map[string]json2.Any {
 
 [noinit]
 pub struct ReadyEvent {
-	pub mut:
+pub mut:
 	session_id         string [json: 'session_id']
 	resume_gateway_url string
 }

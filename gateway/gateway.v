@@ -48,7 +48,7 @@ pub fn (mut g Gateway) start() ! {
 pub fn (mut g Gateway) connect() ! {
 	g.connected = false
 	g.logger.info('connecting to gateway')
-	
+
 	res := g.http.fetch_json[GatewayBotResponse]('GET', 'https://discord.com/api/v10/gateway/bot',
 		'application/json')!
 	url := '${res.url}?v=10&encoding=json'
@@ -83,7 +83,7 @@ pub fn (mut g Gateway) reconnect() ! {
 	g.client.listen()!
 }
 
-fn (mut g Gateway) close()! {
+fn (mut g Gateway) close() ! {
 	g.client.close()!
 }
 
@@ -161,13 +161,13 @@ fn (mut g Gateway) send_resume() ! {
 
 	mut data := map[string]json2.Any{}
 
-	data["token"] = g.token
-	data["session_id"] = g.session_id
-	data["seq"] = seq
+	data['token'] = g.token
+	data['session_id'] = g.session_id
+	data['seq'] = seq
 
 	mut payload := GatewayPayload{
-		op: .resume,
-		data: data,
+		op: .resume
+		data: data
 	}
 
 	g.send(payload)!
@@ -214,7 +214,7 @@ fn (mut g Gateway) handle_payload_hello(payload &GatewayPayload) ! {
 	data := payload.data.as_map()
 
 	g.heartbeat_interval = data['heartbeat_interval']!.int()
-	
+
 	spawn g.routine_heartbeat()
 
 	g.send_identify()!
