@@ -8,8 +8,8 @@ import kitten.gateway
 fn get_intents() int {
 	mut r := intents.Intent.@none.int()
 
-	r += intents.Intent.guild_messages.int() // Guild Messages
-	r += intents.Intent.message_content.int() // Message Content
+	r |= intents.Intent.guild_messages.int() // Guild Messages
+	r |= intents.Intent.message_content.int() // Message Content
 
 	return r
 }
