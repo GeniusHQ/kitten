@@ -1,8 +1,8 @@
 module kitten
 
 import os
-import rest
-import gateway
+import discord.rest
+import discord.gateway
 
 [heap]
 pub struct Client {
