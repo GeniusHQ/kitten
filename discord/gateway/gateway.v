@@ -41,6 +41,14 @@ pub fn new_gateway(token string, intents int) &Gateway {
 	return gateway
 }
 
+fn (g &Gateway) token_raw() string {
+	return g.token
+}
+
+fn (g &Gateway) token_bot() string {
+	return 'Bot ' + g.token_raw()
+}
+
 pub fn (mut g Gateway) start() ! {
 	g.connect()!
 }
@@ -49,7 +57,10 @@ pub fn (mut g Gateway) connect() ! {
 	g.connected = false
 	g.logger.info('connecting to gateway')
 
-	res := g.http.fetch_json[GatewayBotResponse]('GET', 'https://discord.com/api/v10/gateway/bot',
+	res := g.http.fetch_json[GatewayBotResponse](
+		'GET',
+		'https://discord.com/api/v10/gateway/bot',
+		g.token_bot(),
 		'application/json')!
 	url := '${res.url}?v=10&encoding=json'
 
