@@ -82,3 +82,7 @@ pub fn (client &Client) discord_channel_message_send(channel string, content str
 pub fn (client &Client) guilded_channel_fetch(channel_id string) !&guilded_rest.Channel {
 	return client.guilded_rest.channel_fetch(channel_id)!
 }
+
+pub fn (client &Client) guilded_channel_message_send(channel_id string, content string) !&guilded_rest.Message {
+	return client.guilded_rest.channel_message_send(channel_id, content)!
+}

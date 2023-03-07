@@ -1,10 +1,11 @@
 module rest
 
+import x.json2
 import network
 
 [heap]
 pub struct Rest {
-	token string [required]
+	token string              [required]
 	http  &network.HttpClient
 }
 
@@ -26,7 +27,7 @@ fn (rest &Rest) token_bot() string {
 }
 
 fn (rest &Rest) api_root() string {
-	return "https://www.guilded.gg/api/v1"
+	return 'https://www.guilded.gg/api/v1'
 }
 
 pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
@@ -39,4 +40,21 @@ pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
 	channel := response.channel
 
 	return &channel
+}
+
+pub fn (rest &Rest) channel_message_send(channel_id string, content string) !&Message {
+	mut data := map[string]json2.Any{}
+
+	data['content'] = content
+
+	response := rest.http.fetch_json_data[ChannelMessageSendResponse](
+		'POST',
+		'${rest.api_root()}/channels/${channel_id}/messages',
+		rest.token_bot(),
+		'application/json',
+		json2.encode[map[string]json2.Any](data))!
+
+	message := response.message
+
+	return &message
 }
