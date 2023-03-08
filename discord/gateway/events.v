@@ -7,6 +7,7 @@ import reflect
 [noinit]
 pub struct MessageCreateEvent {
 pub mut:
+	id      string     [json: 'id']
 	content string     [json: 'content']
 	channel string     [json: 'channel_id']
 	author  &rest.User [json: 'author'] = unsafe { nil } // Todo: find a better way to do this
@@ -15,6 +16,9 @@ pub mut:
 pub fn (mut event MessageCreateEvent) from_map(data map[string]json2.Any) {
 	for key, val in data {
 		match key {
+			'id' {
+				event.id = val.str()
+			}
 			'content' {
 				event.content = val.str()
 			}

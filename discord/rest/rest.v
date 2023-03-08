@@ -42,8 +42,19 @@ pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
 	return &channel
 }
 
+pub fn (rest &Rest) channel_message_fetch(channel_id string, message_id string) !&Message {
+	message := rest.http.fetch_json[Message](
+		'GET',
+		'${rest.api_root()}/channels/${channel_id}/messages/${message_id}',
+		rest.token_bot(),
+		'application/json')!
+
+	return &message
+}
+
 pub fn (rest &Rest) channel_message_send(channel_id string, content string) !&Message {
 	mut data := map[string]json2.Any{}
+
 	data['content'] = content
 
 	message := rest.http.fetch_json_data[Message](

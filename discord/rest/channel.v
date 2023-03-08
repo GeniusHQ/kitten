@@ -55,6 +55,6 @@ pub fn (mut c Channel) from_map(data map[string]json2.Any) {
 	}
 }
 
-pub fn (mut c Channel) to_map() map[string]json2.Any {
+pub fn (c &Channel) to_map() map[string]json2.Any {
 	return {}
 }

@@ -51,6 +51,9 @@ pub fn (mut m Message) from_map(data map[string]json2.Any) {
 				user.from_map(val.as_map())
 				m.author = &user
 			}
+			'content' {
+				m.content = val.str()
+			}
 			else {
 				dump('unimplemented ${key}')
 			}
@@ -58,6 +61,6 @@ pub fn (mut m Message) from_map(data map[string]json2.Any) {
 	}
 }
 
-pub fn (mut m Message) to_map() map[string]json2.Any {
+pub fn (m &Message) to_map() map[string]json2.Any {
 	return {}
 }
