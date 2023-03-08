@@ -1,34 +1,38 @@
 module main
 
 import os
+
 import kitten
-import kitten.intents
-import kitten.gateway
+import kitten.universe
+import kitten.discord.intents as discord_intents
+import kitten.discord.gateway as discord_gateway
 
-fn get_intents() int {
-	mut r := intents.Intent.@none.int()
+fn get_discord_intents() int {
+	mut r := discord_intents.@none
 
-	r |= intents.Intent.guild_messages.int() // Guild Messages
-	r |= intents.Intent.message_content.int() // Message Content
+	r |= discord_intents.guild_messages // Guild Messages
+	r |= discord_intents.message_content // Message Content
 
 	return r
 }
 
-fn handle_on_ready(mut client kitten.Client, event &gateway.ReadyEvent) ! {
+fn handle_on_ready(mut client kitten.Client, event &discord_gateway.ReadyEvent) ! {
 	println('Ready')
 }
 
-fn handle_on_message(mut client kitten.Client, event &gateway.MessageCreateEvent) ! {
-	if event.content.to_lower().starts_with('!ping') {
-		client.channel_message_send(event.channel, 'pong')!
+fn handle_universe_on_message_create(mut client kitten.Client, message &universe.Message) ! {
+	if message.content.to_lower() == '!ping' {
+		client.universe_channel_message_send(message.platform, message.channel, 'pong')!
 	}
 }
 
 fn main() {
-	mut client := kitten.new_client(os.getenv('DISCORD_TOKEN'), get_intents())
+	mut client := kitten.new_client(
+		os.getenv('DISCORD_TOKEN'), get_discord_intents(),
+		os.getenv("GUILDED_TOKEN"))
 
-	client.on_ready(handle_on_ready)
-	client.on_message_create(handle_on_message)
+	client.discord_on_ready(handle_on_ready)
+	client.universe_on_message_create(handle_universe_on_message_create)
 
 	client.start()!
 	client.wait()!
