@@ -61,20 +61,20 @@ fn handle_message(mut client kitten.Client, message &universe.Message) ! {
 }
 
 fn main() {
-	mut client := kitten.new_client()
+    mut client := kitten.new_client()
 	
-	client.with_discord(
-	    os.getenv("DISCORD_TOKEN"),
-	    intents.guild_messages | intents.message_content)
+    client.with_discord(
+        os.getenv("DISCORD_TOKEN"),
+        intents.guild_messages | intents.message_content)
 		
-	client.with_guilded(
-	    os.getenv("GUILDED_TOKEN"))
+    client.with_guilded(
+        os.getenv("GUILDED_TOKEN"))
 
     client.universe_on_ready(handle_ready)
-	client.universe_on_message_create(handle_message)
+    client.universe_on_message_create(handle_message)
 
-	client.start()!
-	client.wait()!
+    client.start()!
+    client.wait()!
 }
 
 ```
