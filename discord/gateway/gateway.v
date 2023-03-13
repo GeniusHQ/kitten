@@ -185,9 +185,16 @@ fn (mut g Gateway) send_resume() ! {
 }
 
 fn (mut g Gateway) on_message(mut c network.WebsocketClient, msg &websocket.Message) ! {
-	payload := reflect.deserialize[GatewayPayload](msg.payload.bytestr())!
+	match msg.opcode {
+		.text_frame {
+			payload := reflect.deserialize[GatewayPayload](msg.payload.bytestr())!
 
-	g.handle_payload(&payload)!
+			g.handle_payload(&payload)!
+		}
+		else {
+			dump('unhandled discord gateway websocket message type ${msg.opcode}')
+		}
+	}
 }
 
 fn (mut g Gateway) on_close(mut c network.WebsocketClient, code int, reason string) ! {
@@ -197,11 +204,13 @@ fn (mut g Gateway) on_close(mut c network.WebsocketClient, code int, reason stri
 }
 
 fn (mut g Gateway) handle_payload(payload &GatewayPayload) ! {
-	if s := g.sequence {
-		if v := payload.seq {
+	if v := payload.seq {
+		if s := g.sequence {
 			if v > s {
 				g.sequence = v
 			}
+		} else {
+			g.sequence = v
 		}
 	}
 

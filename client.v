@@ -64,15 +64,15 @@ fn (mut client Client) discord_event_message_create(event discord_gateway.Messag
 		func(mut client, event)!
 	}
 
-	message_discord := client.discord_channel_message_fetch(
+	message_platform := client.discord_channel_message_fetch(
 		event.channel,
 		event.id)!
 
 	message := universe.from_message(
-		universe.Platform.discord,
-		string(message_discord.id),
-		string(message_discord.content),
-		string(message_discord.channel))!
+		.discord,
+		string(message_platform.id),
+		string(message_platform.content),
+		string(message_platform.channel))!
 
 	if func := client.universe_fn_on_message {
 		func(mut client, message)!

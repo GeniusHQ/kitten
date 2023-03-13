@@ -19,7 +19,7 @@ Kitten allows developers to simultaneously listen to multiple chat applications.
 
 ### Rich Abstractions
 
-Unlike libraries such as discordgo, Kitten is provided with a variety of abstractions to empower the users' productivity without sacrificing control. We believe that chatbots can be very complex projects and therefore its's often a good idea to present more than one way of getting something done.
+Unlike libraries such as discordgo, Kitten is provided with a variety of abstractions to empower the users' productivity without sacrificing control. We believe that chatbots can be very complex projects and therefore it's often a good idea to present more than one way of getting something done.
 
 ### API Compliance
 
