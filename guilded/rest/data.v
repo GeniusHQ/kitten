@@ -4,6 +4,7 @@ import x.json2
 import reflect
 
 type UUID = string
+type DateString = string
 
 [noinit]
 pub struct Channel {
