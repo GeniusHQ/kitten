@@ -6,3 +6,10 @@ pub enum Platform as int {
 	discord
 	guilded
 }
+
+pub enum PlatformState as int {
+	unknown = -1
+	initializing
+	ready
+	error
+}
