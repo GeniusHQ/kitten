@@ -48,6 +48,8 @@ fn (g &Gateway) token() string {
 }
 
 pub fn (mut g Gateway) start() ! {
+	spawn g.routine_heartbeat()
+
 	g.connect()!
 }
 
@@ -65,9 +67,69 @@ pub fn (mut g Gateway) connect() ! {
 	g.connected = true
 	g.client.listen()!
 
-	g.logger.fatal('failed at listening to guilded gateway')
+	for {
+		g.reconnect()!
+		time.sleep(time.second)
+	}
 
-	// Todo: implement reconnecting
+	g.logger.fatal('failed at listening to guilded gateway')
+}
+
+pub fn (mut g Gateway) reconnect() ! {
+	g.logger.info('reconnecting to guilded gateway')
+	g.connected = false
+
+	g.client = network.new_websocket_client(
+		guilded_gateway_endpoint,
+		mut g.logger)!
+
+	g.client.client.header.add_custom('Authorization', g.token())!
+
+	g.client.on_message(g.on_message)
+	g.client.on_close(g.on_close)
+
+	g.client.start()!
+
+	g.connected = true
+	g.logger.info('successfully reconnected to guilded gateway')
+
+	g.client.listen()!
+}
+
+fn (mut g Gateway) routine_heartbeat() {
+	for {
+		for {
+			if g.heartbeat_interval <= 0 {
+				time.sleep(time.second)
+				continue
+			}
+
+			if !g.connected {
+				time.sleep(time.second)
+				continue
+			}
+
+			break
+		}
+
+		t := 5
+		for i := 0; i < t; i++ {
+			g.send_heartbeat() or {
+				g.logger.warn('failed at sending guilded heartbeat attempt ${i}/${t}')
+				time.sleep(time.second)
+				continue
+			}
+
+			g.logger.info('guilded heartbeat sent')
+			break
+		}
+
+		time.sleep(time.millisecond * g.heartbeat_interval)
+	}
+}
+
+fn (mut g Gateway) send_heartbeat() ! {
+	g.client.client.ping()!
 }
 
 fn (mut g Gateway) on_message(mut c network.WebsocketClient, msg &websocket.Message) ! {
@@ -76,6 +138,10 @@ fn (mut g Gateway) on_message(mut c network.WebsocketClient, msg &websocket.Mess
 			payload := reflect.deserialize[GatewayPayload](msg.payload.bytestr())!
 
 			g.handle_payload(payload)!
+		}
+		.pong {
+			g.logger.info('guilded pong received')
+			// Todo: do something if we don't receive pong
 		}
 		else {
 			dump('unhandled guilded gateway websocket message type ${msg.opcode}')
@@ -119,6 +185,8 @@ fn (mut g Gateway) handle_payload_welcome(payload &GatewayPayload) ! {
 	if func := g.fn_on_welcome {
 		func(event)!
 	}
+
+	g.heartbeat_interval = event.heartbeat_interval
 }
 
 fn (mut g Gateway) handle_payload_missable(payload &GatewayPayload) ! {
