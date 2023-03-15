@@ -50,6 +50,8 @@ fn (g &Gateway) token_bot() string {
 }
 
 pub fn (mut g Gateway) start() ! {
+	spawn g.routine_heartbeat()
+
 	g.connect()!
 }
 
@@ -74,8 +76,16 @@ pub fn (mut g Gateway) connect() ! {
 	g.client.listen()!
 
 	for {
-		g.reconnect()!
-		time.sleep(time.second)
+		t := 5
+		for i := 0; i < t; i++ {
+			g.reconnect() or {
+				g.logger.info('attempting to reconnect discord gateway ${i}/${t}')
+				continue
+			}
+
+			time.sleep(time.second)
+			break
+		}
 	}
 }
 
@@ -108,23 +118,33 @@ fn (mut g Gateway) get_sequence() json2.Any {
 
 fn (mut g Gateway) routine_heartbeat() {
 	for {
-		time.sleep(time.millisecond * g.heartbeat_interval)
+		for {
+			if g.heartbeat_interval <= 0 {
+				time.sleep(time.second)
+				continue
+			}
 
-		if !g.connected {
-			continue
+			if !g.connected {
+				time.sleep(time.second)
+				continue
+			}
+
+			break
 		}
 
 		t := 5
 		for i := 0; i < t; i++ {
 			g.send_heartbeat() or {
-				eprintln('failed at sending heartbeat attempt ${i}/${t}')
+				g.logger.warn('failed at sending discord heartbeat attempt ${i}/${t}')
 				time.sleep(time.second)
 				continue
 			}
 
-			g.logger.info('heartbeat sent')
+			g.logger.info('discord heartbeat sent')
 			break
 		}
+
+		time.sleep(time.millisecond * g.heartbeat_interval)
 
 		// Todo: check if we receive heartbeat_ack
 	}
@@ -234,8 +254,6 @@ fn (mut g Gateway) handle_payload_hello(payload &GatewayPayload) ! {
 	data := payload.data.as_map()
 
 	g.heartbeat_interval = data['heartbeat_interval']!.int()
-
-	spawn g.routine_heartbeat()
 
 	g.send_identify()!
 }

@@ -9,7 +9,7 @@ import guilded.rest as guilded_rest
 import guilded.gateway as guilded_gateway
 
 [heap]
-pub struct Client { // Todo: receive messages from guilded
+pub struct Client {
 pub:
 	stop            chan int
 pub mut:
@@ -205,8 +205,6 @@ pub fn (mut client Client) universe_ready_check(platform universe.Platform) ! {
 	mut flag := true
 
 	client.platforms[platform] = .ready
-
-	println(client.platforms)
 
 	for _, state in client.platforms {
 		if state != .ready {

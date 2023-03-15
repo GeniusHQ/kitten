@@ -68,8 +68,16 @@ pub fn (mut g Gateway) connect() ! {
 	g.client.listen()!
 
 	for {
-		g.reconnect()!
-		time.sleep(time.second)
+		t := 5
+		for i := 0; i < t; i++ {
+			g.reconnect() or {
+				g.logger.info('attempting to reconnect guilded gateway ${i}/${t}')
+				continue
+			}
+
+			time.sleep(time.second)
+			break
+		}
 	}
 
 	g.logger.fatal('failed at listening to guilded gateway')
