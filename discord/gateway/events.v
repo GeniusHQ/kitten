@@ -82,11 +82,16 @@ fn (mut g Gateway) handle_event(data json2.Any, key string) ! {
 			}
 		}
 		'MESSAGE_CREATE' {
-			mut event := MessageCreateEvent{}
-
-			event.from_map(data.as_map())
+			mut event := reflect.from_map[MessageCreateEvent](data.as_map())
 
 			if func := g.fn_on_message {
+				func(event)!
+			}
+		}
+		'INTERACTION_CREATE' {
+			mut event := reflect.from_map[Interaction](data.as_map())
+
+			if func := g.fn_on_interaction_create {
 				func(event)!
 			}
 		}

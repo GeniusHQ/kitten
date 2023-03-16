@@ -22,8 +22,9 @@ mut:
 	resume_url         string
 	session_id         string
 pub mut:
-	fn_on_ready   ?fn (event ReadyEvent) !
-	fn_on_message ?fn (event MessageCreateEvent) !
+	fn_on_ready              ?fn (event ReadyEvent) !
+	fn_on_message            ?fn (event MessageCreateEvent) !
+	fn_on_interaction_create ?fn (event Interaction) !
 }
 
 pub fn new_gateway(token string, intents int) &Gateway {
