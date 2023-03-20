@@ -1,4 +1,5 @@
 <div align="center">
+  <img style="width: 128px; height: 128px" src="https://media.githubusercontent.com/media/GeniusHQ/kitten/main/kitten.png" alt="icon">
   <h1 style="margin: auto">Kitten</h1>
 
   <p>An experimental API for making chat bots in V</p>
