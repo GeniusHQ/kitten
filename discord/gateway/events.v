@@ -1,7 +1,7 @@
 module gateway
 
 import x.json2
-import rest
+import discord.rest
 import reflect
 
 [noinit]

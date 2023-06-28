@@ -48,11 +48,11 @@ pub fn interaction_type(v int) InteractionType {
 
 pub struct Interaction {
 pub mut:
-	id Snowflake [required; json: 'id']
-	application Snowflake [required; json: 'application_id']
-	@type InteractionType [required; json: 'type']
-	data InteractionData [required; json: 'data'] // Todo: this can be optional in the future
-	token string [required; json: 'token']
+	id          Snowflake       [json: 'id'; required]
+	application Snowflake       [json: 'application_id'; required]
+	@type       InteractionType [json: 'type'; required]
+	data        InteractionData [json: 'data'; required] // Todo: this can be optional in the future
+	token       string          [json: 'token'; required]
 	// Todo: complete this
 }
 
@@ -87,9 +87,9 @@ pub fn (i &Interaction) to_map() map[string]json2.Any {
 
 pub struct InteractionData {
 pub mut:
-	id Snowflake [required; json: 'id']
-	name string [required; json: 'name']
-	@type InteractionType [required; json: 'type']
+	id    Snowflake       [json: 'id'; required]
+	name  string          [json: 'name'; required]
+	@type InteractionType [json: 'type'; required]
 	// Todo: complete this
 }
 

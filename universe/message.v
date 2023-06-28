@@ -11,10 +11,10 @@ pub:
 
 pub fn from_message(platform Platform, id string, content string, channel string) !&Message {
 	mut message := Message{
-		platform: platform,
-		id: id,
-		content: content,
-		channel: channel,
+		platform: platform
+		id: id
+		content: content
+		channel: channel
 	}
 
 	return &message

@@ -9,16 +9,16 @@ type DateString = string
 [noinit]
 pub struct Channel {
 pub mut:
-	id UUID [required]
+	id    UUID   [required]
 	@type string [required] // Todo: maybe use an enum
 	// Todo: add topic
-	created_at string [required; json: 'createdAt']
-	created_by UUID   [required; json: 'createdBy']
+	created_at string [json: 'createdAt'; required]
+	created_by UUID   [json: 'createdBy'; required]
 	// Todo: add updatedAt
-	server UUID [required; json: 'serverId']
+	server UUID [json: 'serverId'; required]
 	// Todo: add parentId
 	// Todo: add categoryId
-	group UUID [required; json: 'groupId']
+	group UUID [json: 'groupId'; required]
 	// Todo: add isPublic
 	// Todo: add archivedBy
 	// Todo: add archivedAt

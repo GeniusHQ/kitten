@@ -31,11 +31,8 @@ fn (rest &Rest) api_root() string {
 }
 
 pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
-	response := rest.http.fetch_json[ChannelResponse](
-		'GET',
-		'${rest.api_root()}/channels/${channel_id}',
-		rest.token_bot(),
-		'application/json')!
+	response := rest.http.fetch_json[ChannelResponse]('GET', '${rest.api_root()}/channels/${channel_id}',
+		rest.token_bot(), 'application/json')!
 
 	channel := response.channel
 
@@ -47,12 +44,8 @@ pub fn (rest &Rest) channel_message_send(channel_id string, content string) !&Me
 
 	data['content'] = content
 
-	response := rest.http.fetch_json_data[ChannelMessageSendResponse](
-		'POST',
-		'${rest.api_root()}/channels/${channel_id}/messages',
-		rest.token_bot(),
-		'application/json',
-		json2.encode[map[string]json2.Any](data))!
+	response := rest.http.fetch_json_data[ChannelMessageSendResponse]('POST', '${rest.api_root()}/channels/${channel_id}/messages',
+		rest.token_bot(), 'application/json', json2.encode[map[string]json2.Any](data))!
 
 	message := response.message
 

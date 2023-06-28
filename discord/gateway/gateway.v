@@ -60,11 +60,8 @@ pub fn (mut g Gateway) connect() ! {
 	g.connected = false
 	g.logger.info('connecting to gateway')
 
-	res := g.http.fetch_json[GatewayBotResponse](
-		'GET',
-		'https://discord.com/api/v10/gateway/bot',
-		g.token_bot(),
-		'application/json')!
+	res := g.http.fetch_json[GatewayBotResponse]('GET', 'https://discord.com/api/v10/gateway/bot',
+		g.token_bot(), 'application/json')!
 	url := '${res.url}?v=10&encoding=json'
 
 	g.client = network.new_websocket_client(url, mut g.logger)!

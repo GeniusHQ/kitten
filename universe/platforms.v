@@ -1,13 +1,13 @@
 module universe
 
-pub enum Platform as int {
+pub enum Platform {
 	unknown = -1
 	any
 	discord
 	guilded
 }
 
-pub enum PlatformState as int {
+pub enum PlatformState {
 	unknown = -1
 	initializing
 	ready

@@ -1,7 +1,7 @@
 module gateway
 
 import x.json2
-import rest
+import guilded.rest
 import reflect
 
 type UUID = string
@@ -10,7 +10,7 @@ type UUID = string
 pub struct ChatMessageCreatedEvent {
 pub mut:
 	server  UUID          [json: 'serverId']
-	message &rest.Message [json: 'message']  = unsafe { nil }
+	message &rest.Message [json: 'message'] = unsafe { nil }
 }
 
 pub fn (mut event ChatMessageCreatedEvent) from_map(data map[string]json2.Any) {

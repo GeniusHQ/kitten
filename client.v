@@ -11,15 +11,15 @@ import guilded.gateway as guilded_gateway
 [heap]
 pub struct Client {
 pub:
-	stop            chan int
+	stop chan int
 pub mut:
 	platforms       map[universe.Platform]universe.PlatformState
 	discord_token   string
 	discord_intents int
-	discord_rest    &discord_rest.Rest = unsafe { nil }
+	discord_rest    &discord_rest.Rest       = unsafe { nil }
 	discord_gateway &discord_gateway.Gateway = unsafe { nil }
 	guilded_token   string
-	guilded_rest    &guilded_rest.Rest = unsafe { nil }
+	guilded_rest    &guilded_rest.Rest       = unsafe { nil }
 	guilded_gateway &guilded_gateway.Gateway = unsafe { nil }
 mut:
 	discord_fn_on_ready          ?fn (mut client Client, event &discord_gateway.ReadyEvent) !
@@ -42,27 +42,22 @@ pub fn (mut client Client) with_discord(token string, intents discord_intents.In
 
 	client.discord_token = token
 	client.discord_intents = intents
-	
-	client.discord_rest = discord_rest.new_rest(
-		client.discord_token,
-		client.discord_intents)
 
-	client.discord_gateway = discord_gateway.new_gateway(
-		client.discord_token,
-		client.discord_intents)
+	client.discord_rest = discord_rest.new_rest(client.discord_token, client.discord_intents)
 
-	return client }
+	client.discord_gateway = discord_gateway.new_gateway(client.discord_token, client.discord_intents)
+
+	return client
+}
 
 pub fn (mut client Client) with_guilded(token string) &Client {
 	client.platforms[.guilded] = .initializing
 
 	client.guilded_token = token
 
-	client.guilded_rest = guilded_rest.new_rest(
-		client.guilded_token)
+	client.guilded_rest = guilded_rest.new_rest(client.guilded_token)
 
-	client.guilded_gateway = guilded_gateway.new_gateway(
-		client.guilded_token)
+	client.guilded_gateway = guilded_gateway.new_gateway(client.guilded_token)
 
 	return client
 }
@@ -78,20 +73,16 @@ pub fn (mut client Client) start() ! {
 				client.discord_gateway.fn_on_ready = client.discord_event_ready
 				client.discord_gateway.fn_on_message = client.discord_event_message_create
 
-				spawn fn[mut client]() {
-					client.discord_gateway.start() or {
-						panic('client discord gateway ${err}')
-					}
+				spawn fn [mut client] () {
+					client.discord_gateway.start() or { panic('client discord gateway ${err}') }
 				}()
 			}
 			.guilded {
 				client.guilded_gateway.fn_on_welcome = client.guilded_event_welcome
 				client.guilded_gateway.fn_on_message_create = client.guilded_event_message_create
 
-				spawn fn[mut client]() {
-					client.guilded_gateway.start() or {
-						panic('client guilded gateway ${err}')
-					}
+				spawn fn [mut client] () {
+					client.guilded_gateway.start() or { panic('client guilded gateway ${err}') }
 				}()
 			}
 			else {
@@ -125,14 +116,9 @@ fn (mut client Client) discord_event_message_create(event discord_gateway.Messag
 		func(mut client, event)!
 	}
 
-	message_platform := client.discord_channel_message_fetch(
-		event.channel,
-		event.id)!
+	message_platform := client.discord_channel_message_fetch(event.channel, event.id)!
 
-	message := universe.from_message(
-		.discord,
-		string(message_platform.id),
-		string(message_platform.content),
+	message := universe.from_message(.discord, string(message_platform.id), string(message_platform.content),
 		string(message_platform.channel))!
 
 	if func := client.universe_fn_on_message {
@@ -175,10 +161,7 @@ pub fn (mut client Client) guilded_event_message_create(event guilded_gateway.Ch
 
 	message_platform := event.message
 
-	message := universe.from_message(
-		.guilded,
-		string(message_platform.id),
-		string(message_platform.content),
+	message := universe.from_message(.guilded, string(message_platform.id), string(message_platform.content),
 		string(message_platform.channel))!
 
 	if func := client.universe_fn_on_message {
@@ -233,22 +216,16 @@ pub fn (client &Client) universe_channel_message_send(platform universe.Platform
 		.discord {
 			message_platform := client.discord_channel_message_send(channel_id, content)!
 
-			message := universe.from_message(
-				universe.Platform.discord,
-				string(message_platform.id),
-				string(message_platform.content),
-				string(message_platform.channel))!
+			message := universe.from_message(universe.Platform.discord, string(message_platform.id),
+				string(message_platform.content), string(message_platform.channel))!
 
 			return message
 		}
 		.guilded {
 			message_platform := client.guilded_channel_message_send(channel_id, content)!
 
-			message := universe.from_message(
-				universe.Platform.discord,
-				string(message_platform.id),
-				string(message_platform.content),
-				string(message_platform.channel))!
+			message := universe.from_message(universe.Platform.discord, string(message_platform.id),
+				string(message_platform.content), string(message_platform.channel))!
 
 			return message
 		}

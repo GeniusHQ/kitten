@@ -33,21 +33,15 @@ fn (rest &Rest) api_root() string {
 }
 
 pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
-	channel := rest.http.fetch_json[Channel](
-		'GET',
-		'${rest.api_root()}/channels/${channel_id}',
-		rest.token_bot(),
-		'application/json')!
+	channel := rest.http.fetch_json[Channel]('GET', '${rest.api_root()}/channels/${channel_id}',
+		rest.token_bot(), 'application/json')!
 
 	return &channel
 }
 
 pub fn (rest &Rest) channel_message_fetch(channel_id string, message_id string) !&Message {
-	message := rest.http.fetch_json[Message](
-		'GET',
-		'${rest.api_root()}/channels/${channel_id}/messages/${message_id}',
-		rest.token_bot(),
-		'application/json')!
+	message := rest.http.fetch_json[Message]('GET', '${rest.api_root()}/channels/${channel_id}/messages/${message_id}',
+		rest.token_bot(), 'application/json')!
 
 	return &message
 }
@@ -57,12 +51,8 @@ pub fn (rest &Rest) channel_message_send(channel_id string, content string) !&Me
 
 	data['content'] = content
 
-	message := rest.http.fetch_json_data[Message](
-		'POST',
-		'${rest.api_root()}/channels/${channel_id}/messages',
-		rest.token_bot(),
-		'application/json',
-		json2.encode[map[string]json2.Any](data))!
+	message := rest.http.fetch_json_data[Message]('POST', '${rest.api_root()}/channels/${channel_id}/messages',
+		rest.token_bot(), 'application/json', json2.encode[map[string]json2.Any](data))!
 
 	return &message
 }
