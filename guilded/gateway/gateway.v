@@ -5,24 +5,22 @@ import net.websocket
 import network
 import reflect
 import logger
-import x.json2
-import os
 
 const guilded_gateway_endpoint = 'wss://www.guilded.gg/websocket/v1'
 
 [heap]
 pub struct Gateway {
-	token string [required]
-	http &network.HttpClient
+	token string              [required]
+	http  &network.HttpClient
 mut:
-	logger &logger.Logger
-	client &network.WebsocketClient
-	connected bool
+	logger             &logger.Logger
+	client             &network.WebsocketClient
+	connected          bool
 	heartbeat_interval int
-	sequence ?int
+	sequence           ?int
 pub mut:
 	fn_on_welcome        ?fn (event WelcomeEvent) !
-	fn_on_message_create ?fn (event ChatMessageCreatedEvent)!
+	fn_on_message_create ?fn (event ChatMessageCreatedEvent) !
 }
 
 pub fn new_gateway(token string) &Gateway {
@@ -57,7 +55,7 @@ pub fn (mut g Gateway) connect() ! {
 	g.connected = false
 	g.logger.info('connecting to guilded gateway')
 
-	g.client = network.new_websocket_client(guilded_gateway_endpoint, mut g.logger)!
+	g.client = network.new_websocket_client(gateway.guilded_gateway_endpoint, mut g.logger)!
 	g.client.client.header.add_custom('Authorization', g.token())!
 
 	g.client.on_message(g.on_message)
@@ -87,9 +85,7 @@ pub fn (mut g Gateway) reconnect() ! {
 	g.logger.info('reconnecting to guilded gateway')
 	g.connected = false
 
-	g.client = network.new_websocket_client(
-		guilded_gateway_endpoint,
-		mut g.logger)!
+	g.client = network.new_websocket_client(gateway.guilded_gateway_endpoint, mut g.logger)!
 
 	g.client.client.header.add_custom('Authorization', g.token())!
 

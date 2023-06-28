@@ -1,7 +1,6 @@
 module rest
 
 import x.json2
-import reflect
 
 [noinit]
 pub struct User {
@@ -10,7 +9,7 @@ pub mut:
 	// @type string [required] // Todo: use an enum
 	name string [required]
 	// Todo: complete this
-	created_at DateString [required; json: 'createdAt']
+	created_at DateString [json: 'createdAt'; required]
 }
 
 pub fn (mut u User) from_map(data map[string]json2.Any) {
