@@ -3,7 +3,7 @@ module network
 import net.http
 import reflect
 
-const useragent = 'Kitten (https://github.com/geniushq/kitten v0.0.0)'
+const useragent = 'Kitten (https://github.com/geniushq/kitten v0.2)'
 
 pub struct HttpClient {
 }
@@ -43,11 +43,11 @@ pub fn (h &HttpClient) fetch(method string, url string, authorization string, co
 pub fn (h &HttpClient) fetch_json[T](method string, url string, authorization string, content_type string) !T {
 	body := h.fetch(method, url, authorization, content_type, '')!
 
-	return reflect.deserialize[T](body)!
+	return reflect.deserialize_json[T](body)!
 }
 
 pub fn (h &HttpClient) fetch_json_data[T](method string, url string, authorization string, content_type string, data string) !T {
 	body := h.fetch(method, url, authorization, content_type, data)!
 
-	return reflect.deserialize[T](body)!
+	return reflect.deserialize_json[T](body)!
 }
