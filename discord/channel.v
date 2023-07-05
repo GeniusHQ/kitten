@@ -1,21 +1,22 @@
 module discord
 
 import hlib.json
+import hlib.optional
 
 [noinit]
 pub struct Channel {
-	pub mut:
-	id       Snowflake   [required]
+pub mut:
+	id Snowflake [required]
 	// @type    ChannelType [required]
 	guild    Snowflake
-	position int
+	position optional.Optional[int]
 	// Todo: add permission_overwrites
-	name                string
-	topic               string
-	nsfw                bool
-	last_message_id     Snowflake
-	bitrate             int
-	user_limit          int
+	name                optional.Optional[string]
+	topic               optional.Optional[string]
+	nsfw                optional.Optional[bool]
+	last_message_id     optional.Optional[Snowflake]
+	bitrate             optional.Optional[int]
+	user_limit          optional.Optional[int]
 	rate_limit_per_user int
 	// Todo: add recipients
 	icon        string
@@ -45,8 +46,13 @@ pub struct Channel {
 pub fn (mut c Channel) from_json(v json.Value) ! {
 	data := v.object().get()!
 
-	c.id = data.at("id").get()!
-	// Todo: c.@type
+	c.id = data.at('id').get()!.string().get()!
+	// Todo: type
+	c.guild = data.at('guild_id').get()!.string().get()!
+	c.position = data.at('position')
+		.map(fn (v json.Value) int {
+			return int(v.f64().get() or { 0 })
+		})
 }
 
 pub fn (c &Channel) to_json() json.Value {

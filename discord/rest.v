@@ -32,7 +32,6 @@ fn (rest &Rest) api_root() string {
 }
 
 pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
-    println("[${rest.token_bot()}]")
 	channel := rest.http.fetch_json[Channel](
 		'GET',
 		'${rest.api_root()}/channels/${channel_id}',
