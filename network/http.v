@@ -16,7 +16,7 @@ pub fn new_http_client() &HttpClient {
 
 fn (h &HttpClient) headers_raw() map[string]string {
 	return {
-		'User-Agent':    useragent,
+		'User-Agent': useragent,
 	}
 }
 

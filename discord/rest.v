@@ -2,6 +2,8 @@ module discord
 
 import network
 
+import hlib.json
+
 [heap]
 pub struct Rest {
 	token   string [required]
@@ -39,4 +41,19 @@ pub fn (rest &Rest) channel_fetch(channel_id string) !&Channel {
 		'application/json')!
 
 	return &channel
+}
+
+pub fn (rest &Rest) channel_message_send(channel_id string, content string) !&Message {
+	mut data := map[string]json.Value{}
+
+	data['content'] = content
+
+	message := rest.http.fetch_json_data[Message](
+		'POST',
+		'${rest.api_root()}/channels/${channel_id}/messages',
+		rest.token_bot(),
+		'application/json',
+		json.encode(data))!
+
+	return &message
 }
