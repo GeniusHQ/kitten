@@ -1,12 +1,12 @@
-module rest
+module discord
 
-import x.json2
+import hlib.json
 
 [noinit]
 pub struct Channel {
-pub mut:
+	pub mut:
 	id       Snowflake   [required]
-	@type    ChannelType [required]
+	// @type    ChannelType [required]
 	guild    Snowflake
 	position int
 	// Todo: add permission_overwrites
@@ -42,19 +42,13 @@ pub mut:
 	// Todo: add default_forum_layout
 }
 
-pub fn (mut c Channel) from_map(data map[string]json2.Any) {
-	for key, val in data {
-		match key {
-			'id' {
-				c.id = val.str()
-			}
-			else {
-				dump('unimplemented ${key}')
-			}
-		}
-	}
+pub fn (mut c Channel) from_json(v json.Value) ! {
+	data := v.object().get()!
+
+	c.id = data.at("id").get()!
+	// Todo: c.@type
 }
 
-pub fn (c &Channel) to_map() map[string]json2.Any {
-	return {}
+pub fn (c &Channel) to_json() json.Value {
+	return map[string]json.Value{}
 }
